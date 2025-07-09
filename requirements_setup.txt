@@ -1,0 +1,24 @@
+# Core dependencies
+streamlit>=1.28.0
+langchain>=0.0.350
+pandas>=1.5.0
+requests>=2.31.0
+fpdf2==2.8.3  # Latest available version as of now
+
+# LLM and Embeddings
+openai>=1.3.0
+sentence-transformers>=2.2.0
+torch>=1.13.0
+transformers>=4.30.0
+
+# Vector Stores
+chromadb>=0.4.0
+faiss-cpu>=1.7.0
+
+# Optional: For Ollama support
+ollama>=0.1.0
+
+# Utilities
+python-dotenv>=1.0.0
+numpy>=1.24.0
+scipy>=1.10.0
