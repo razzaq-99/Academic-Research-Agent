@@ -86,28 +86,23 @@ class ArxivAPI:
         try:
             root = ET.fromstring(xml_content)
             
-            # Define namespaces
             ns = {
                 'atom': 'http://www.w3.org/2005/Atom',
                 'arxiv': 'http://arxiv.org/schemas/atom'
             }
             
             for entry in root.findall('atom:entry', ns):
-                # Extract basic information
                 title = entry.find('atom:title', ns).text.strip().replace('\n', ' ')
                 summary = entry.find('atom:summary', ns).text.strip().replace('\n', ' ')
                 
-                # Extract authors
                 authors = []
                 for author in entry.findall('atom:author', ns):
                     name = author.find('atom:name', ns).text
                     authors.append(name)
                 
-                # Extract publication date
                 published = entry.find('atom:published', ns).text
                 pub_date = published.split('T')[0]  # Extract date part
                 
-                # Extract ArXiv ID and PDF URL
                 arxiv_id = entry.find('atom:id', ns).text.split('/')[-1]
                 pdf_url = None
                 
@@ -116,7 +111,6 @@ class ArxivAPI:
                         pdf_url = link.get('href')
                         break
                 
-                # Extract DOI if available
                 doi = None
                 doi_element = entry.find('arxiv:doi', ns)
                 if doi_element is not None:
@@ -286,10 +280,8 @@ class LLMService:
                 """
             )
             
-            # Create chain
             chain = LLMChain(llm=self.llm, prompt=prompt_template)
             
-            # Generate response
             response = chain.run(
                 title=paper.title,
                 abstract=paper.abstract,
@@ -358,7 +350,6 @@ class VectorStore:
             documents = []
             
             for i, paper in enumerate(papers):
-                # Create document with metadata
                 content = f"Title: {paper.title}\n\nAbstract: {paper.abstract}"
                 metadata = {
                     "title": paper.title,
@@ -488,7 +479,6 @@ Based on the analysis of {len(papers)} papers, several key trends emerge in the 
             pdf.add_page()
             pdf.set_font('Arial', size=12)
             
-            # Add content
             pdf.cell(0, 10, f'Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}', 0, 1)
             pdf.ln(10)
             
@@ -501,7 +491,6 @@ Based on the analysis of {len(papers)} papers, several key trends emerge in the 
                 pdf.cell(0, 8, f'Date: {paper.publication_date}', 0, 1)
                 
                 pdf.set_font('Arial', size=9)
-                # Add abstract (truncated for PDF)
                 abstract_lines = paper.abstract[:500].split('\n')
                 for line in abstract_lines:
                     pdf.cell(0, 6, line.encode('latin-1', 'ignore').decode('latin-1'), 0, 1)
@@ -530,23 +519,19 @@ class AcademicResearchAgent:
         try:
             logger.info(f"Starting research for query: {query}")
             
-            # Step 1: Search for papers
-            st.info("🔍 Searching for relevant papers...")
+            # st.info("🔍 Searching for relevant papers...")
             papers = await self._search_papers(query, max_papers)
             
             if not papers:
                 return {"error": "No papers found for the given query"}
             
-            # Step 2: Analyze papers with LLM
-            st.info("🤖 Analyzing papers with AI...")
+            # st.info("🤖 Analyzing papers with AI...")
             papers = await self._analyze_papers(papers)
             
-            # Step 3: Create vector store for semantic search
-            st.info("📊 Creating semantic search index...")
+            # st.info("📊 Creating semantic search index...")
             self.vector_store.create_from_papers(papers)
             
-            # Step 4: Generate reports
-            st.info("📝 Generating research report...")
+            # st.info("📝 Generating research report...")
             markdown_report = self.report_generator.generate_markdown_report(papers, query)
             
             return {
@@ -600,7 +585,7 @@ class AcademicResearchAgent:
                 
             except Exception as e:
                 logger.error(f"Error analyzing paper {paper.title}: {e}")
-                analyzed_papers.append(paper)  # Add without analysis
+                analyzed_papers.append(paper)  
         
         return analyzed_papers
     
@@ -610,7 +595,6 @@ class AcademicResearchAgent:
         seen_titles = set()
         
         for paper in papers:
-            # Simple duplicate detection based on title
             title_lower = paper.title.lower().strip()
             if title_lower not in seen_titles:
                 seen_titles.add(title_lower)
@@ -628,7 +612,7 @@ class AcademicResearchAgent:
                     "authors": doc.metadata.get("authors", ""),
                     "publication_date": doc.metadata.get("publication_date", ""),
                     "content": doc.page_content,
-                    "relevance_score": "High"  # Placeholder
+                    "relevance_score": "High" 
                 }
                 for doc in results
             ]
