@@ -39,7 +39,7 @@ A comprehensive research assistant that automates literature reviews, paper anal
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/smart-research-hub.git
+git clone https://github.com/razzaq-99/smart-research-hub.git
 cd smart-research-hub
 
 # Install dependencies
@@ -89,11 +89,11 @@ We welcome contributions from the community! Here's how you can help make Smart 
 #### 1. **Fork & Clone**
 ```bash
 # Fork the repository on GitHub, then clone your fork
-git clone https://github.com/YOUR_USERNAME/smart-research-hub.git
+git clone https://github.com/razzaq-99/smart-research-hub.git
 cd smart-research-hub
 
 # Add the original repository as upstream
-git remote add upstream https://github.com/ORIGINAL_USERNAME/smart-research-hub.git
+git remote add upstream https://github.com/razzaq-99/smart-research-hub.git
 ```
 
 #### 2. **Environment Setup**
@@ -172,28 +172,6 @@ We're especially looking for help in these areas:
 - 🎨 **UI/UX Improvements**: Better design and user experience
 - 🔐 **Authentication**: User accounts and saved searches
 
-#### **Beginner-Friendly**
-- 📚 **Documentation**: README improvements, tutorials
-- 🐛 **Bug Fixes**: Small bug fixes and improvements
-- 🧪 **Testing**: Write unit tests and integration tests
-- 🎨 **Styling**: CSS improvements and responsive design
-
-### 🏆 Recognition
-
-Contributors will be recognized in:
-- **Contributors Section**: Added to README.md
-- **Release Notes**: Mentioned in version releases
-- **GitHub**: Profile highlighted in repository
-- **Documentation**: Contributor credits in docs
-
-### 📞 Get Help
-
-Need help contributing? Here's how to get support:
-
-- **GitHub Issues**: Create an issue for questions or problems
-- **Discussions**: Use GitHub Discussions for general questions
-- **Email**: Contact the maintainers directly
-- **Documentation**: Check existing documentation first
 
 
 ---
