@@ -299,8 +299,8 @@ def render_custom_header():
     """Render custom header with gradient background"""
     st.markdown("""
     <div class="custom-header">
-        <h1>🔬 Academic Research Agent</h1>
-        <p>Elevate Your Literature Review with AI Precision</p>
+        <h1>🔬 Smart Research Hub</h1>
+        <p>Your AI-Powered Research Companion</p>
     </div>
     """, unsafe_allow_html=True)
 
