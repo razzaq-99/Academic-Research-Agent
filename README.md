@@ -4,7 +4,7 @@
 
 A comprehensive research assistant that automates literature reviews, paper analysis, and research report generation using advanced AI and multiple academic databases.
 
-<img src="(https://github.com/razzaq-99/Academic-Research-Agent/blob/master/UI/my_research.png)"/>
+<img src="https://github.com/razzaq-99/Academic-Research-Agent/blob/master/UI/my_research.png"/>
 
 ## ✨ Key Features
 
