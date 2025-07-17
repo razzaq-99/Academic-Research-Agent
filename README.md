@@ -30,6 +30,8 @@ A comprehensive research assistant that automates literature reviews, paper anal
 - PDF generation capabilities
 - Custom formatting options
 
+<img src="[screenshots/desktop-view.png](https://github.com/razzaq-99/Academic-Research-Agent/blob/master/UI/my_research.png)"/>
+
 ## 🚀 Quick Start
 
 ### Prerequisites
