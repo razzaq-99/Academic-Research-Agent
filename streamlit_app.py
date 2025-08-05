@@ -482,7 +482,7 @@ def render_analytics_charts(result):
             title="📅 Publications by Year",
             labels={'x': 'Year', 'y': 'Number of Papers'},
             color=year_counts.values,
-            color_continuous_scale='Viridis'
+            color_continuous_scale='magma'
         )
         fig_years.update_layout(
             showlegend=False, 
@@ -501,7 +501,7 @@ def render_analytics_charts(result):
             title="📊 Citation Distribution",
             labels={'x': 'Citations', 'y': 'Number of Papers'},
             nbins=10,
-            color_discrete_sequence=['#667eea']
+            color_discrete_sequence=['rgba(160, 0, 0, 1.0)']
         )
         fig_citations.update_layout(
             showlegend=False, 
