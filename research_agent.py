@@ -101,7 +101,7 @@ class ArxivAPI:
                     authors.append(name)
                 
                 published = entry.find('atom:published', ns).text
-                pub_date = published.split('T')[0]  # Extract date part
+                pub_date = published.split('T')[0]  
                 
                 arxiv_id = entry.find('atom:id', ns).text.split('/')[-1]
                 pdf_url = None

@@ -9,10 +9,9 @@ import asyncio
 import pandas as pd
 from datetime import datetime
 import plotly.express as px
-import plotly.graph_objects as go
 from research_agent import AcademicResearchAgent, ResearchPaper
 
-# Custom CSS 
+# ----------------- Custom CSS ---------------- 
 def load_css():
     st.markdown("""
     <style>
@@ -295,15 +294,19 @@ def load_css():
     </style>
     """, unsafe_allow_html=True)
 
+
+# ----------------- HEADER ----------------
 def render_custom_header():
     """Render custom header with gradient background"""
     st.markdown("""
     <div class="custom-header">
-        <h1>🔬 Smart Research Hub</h1>
+        <h1> Smart Research Hub</h1>
         <p>Your AI-Powered Research Companion</p>
     </div>
     """, unsafe_allow_html=True)
 
+
+# ----------------- Metric Cards i.e total papers retrieved , Avg Citations and so on ----------------
 def render_metric_cards(result):
     """Render metric cards for research results"""
     col1, col2, col3, col4 = st.columns(4)
@@ -344,6 +347,8 @@ def render_metric_cards(result):
         </div>
         """, unsafe_allow_html=True)
 
+
+# ----------------- Main Interface ----------------
 def render_research_interface():
     """Render the main research interface"""
     st.markdown("Research Topic", unsafe_allow_html=True)
@@ -364,6 +369,8 @@ def render_research_interface():
     
     return query, submitted
 
+
+# ----------------- Sidebar ----------------
 def render_sidebar_config():
     """Render sidebar configuration"""
     st.sidebar.markdown("Research Parameters")
@@ -399,15 +406,15 @@ def clean_text(text):
     
     return text
 
+
+# ----------------- Paper description cards ----------------
 def render_paper_card(paper: ResearchPaper, index: int):
     """Render individual paper card using Streamlit components"""
     
-    # Clean all text fields
     clean_title = clean_text(paper.title)
     clean_abstract = clean_text(paper.abstract)
     clean_authors = [clean_text(author) for author in paper.authors]
     clean_venue = clean_text(paper.venue) if paper.venue else ""
-    
     
     pub_date = paper.publication_date if paper.publication_date else "Date not available"
     
@@ -467,11 +474,12 @@ def render_paper_card(paper: ResearchPaper, index: int):
         
         st.markdown("---")
 
+
+# ----------------- Graphs and Charts ----------------
 def render_analytics_charts(result):
     """Render analytics charts for research results"""
     papers = result['papers']
     
-    # Publication years chart
     years = [p.publication_date[:4] for p in papers if p.publication_date]
     if years:
         year_counts = pd.Series(years).value_counts().sort_index()
@@ -493,7 +501,7 @@ def render_analytics_charts(result):
         )
         st.plotly_chart(fig_years, use_container_width=True)
     
-    # Citations distribution chart
+    
     citations = [p.citation_count for p in papers if p.citation_count]
     if citations:
         fig_citations = px.histogram(
@@ -512,6 +520,8 @@ def render_analytics_charts(result):
         )
         st.plotly_chart(fig_citations, use_container_width=True)
 
+
+# ----------------- Main method ----------------
 def main():
     st.set_page_config(
         page_title="Academic Research Agent",
@@ -573,7 +583,7 @@ def main():
                 help="Search through titles and abstracts"
             )
             
-            # Filter papers based on search
+            # ----------------- Filtering papers ----------------
             filtered_papers = result['papers']
             if search_query:
                 search_lower = search_query.lower()
@@ -584,7 +594,7 @@ def main():
                        any(search_lower in author.lower() for author in p.authors)
                 ]
             
-            # Display papers
+            # ----------------- Displaying papers ----------------
             if filtered_papers:
                 st.markdown(f"**Showing {len(filtered_papers)} of {len(result['papers'])} papers**")
                 st.markdown("---")
@@ -623,7 +633,6 @@ def main():
                     st.info("No report available for download.")
             
             with col2:
-                # Prepare CSV data
                 df_data = []
                 for paper in result['papers']:
                     df_data.append({
@@ -649,11 +658,11 @@ def main():
                     use_container_width=True
                 )
     
-    # Footer
+    # ----------------- Footer ----------------
     st.markdown("---")
     st.markdown(
         "<div style='text-align: center; color: #7f8c8d; font-size: 0.9rem; padding: 1rem;'>"
-        "🔬 Academic Research Agent | Powered by AI | Made by Abdul Razzaq"
+        "Academic Research Agent | Powered by AI | Made by Abdul Razzaq"
         "</div>",
         unsafe_allow_html=True
     )
