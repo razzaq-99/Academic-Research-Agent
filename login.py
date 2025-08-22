@@ -33,7 +33,6 @@ def save_users(users):
 
 
 def hash_password(password: str, salt: str = None):
-    
     if salt is None:
         salt = os.urandom(16).hex()
     dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 200000)
@@ -77,23 +76,27 @@ CUSTOM_CSS = """
   --shadow: rgba(13,17,28,0.10);
 }
 
-/* App background (keeps light gradient so card stands out regardless of theme) */
+/* more top space for the whole page/container */
 [data-testid="stAppViewContainer"]{
     background: linear-gradient(180deg, #fbfcfd, #f4f6fa) !important;
 }
 
-/* Block container spacing */
+/* increase top padding so title + slogan float lower (more space from top) */
 .block-container{
-    padding-top: 18px;
+    padding-top: 40px;
     padding-bottom: 28px;
 }
 
-/* Header (centered, modern) */
+/* Strong, robust header centering and some extra breathing room */
 .app-header{
     text-align: center;
-    margin-bottom: 6px;
+    margin-top: 18px;        /* extra space from the very top */
+    margin-bottom: 14px;     /* space between header and card */
     padding-left: 12px;
     padding-right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .header-icon{
     font-size:42px;
@@ -115,32 +118,33 @@ CUSTOM_CSS = """
     margin-top:6px;
 }
 
-/* Layout: use columns to center the card reliably */
+/* layout for centering the card in different widths */
 .login-col{
     display:flex;
     justify-content:center;
     align-items:flex-start;
 }
 
-/* Card container */
+/* card */
 # .card{
 #     width: 0px;
 #     max-width: 100vw;
 #     background: var(--card);
-#     border-radius: 14px;
+#     border-radius: 20px;
 #     padding: 28px;
-#     box-shadow: 0 10px 28px var(--shadow);
-#     border: 1px solid rgba(16,24,40,0.03);
-#     margin-top: 20px;
+#     margin-top: 28px; /* ensures space between header and card */
 # }
+
+/* center the small heading inside the card (Login here...) and add top space */
 .card h3{
-    text-align:left;
+    text-align:center;
+    margin-top: 6px;
     margin-bottom: 18px;
     font-size:18px;
     color: #101428;
 }
 
-/* Only style inputs that are inside the card so other components remain untouched */
+/* inputs keep their styling and left-aligned placeholders */
 .card .stTextInput>div>div>input,
 .card .stTextInput>div>div>textarea {
     border-radius:10px !important;
@@ -152,39 +156,49 @@ CUSTOM_CSS = """
 }
 .card .stTextInput>label { color: #0b1220 !important; font-weight:600; }
 
-/* placeholder */
 .card .stTextInput>div>div>input::placeholder { color:#6b7280 !important; }
 
-/* Button: scoped styling for card buttons */
+/* center the sign-in button inside the card by making it auto-width and centering it */
 .card .stButton>button {
     background: linear-gradient(180deg,var(--primary2), #8b0000);
     color: white;
-    padding: 10px 14px;
+    padding: 10px 32px;
     border-radius: 10px;
-    width: 100%;
+    width: auto;
     font-weight: 700;
     border: none;
     box-shadow: 0 6px 18px rgba(183,28,28,0.12);
+    display: block;
+    margin: 0 auto; /* centers the button */
 }
 
-/* checkbox label color inside card */
+/* keep checkbox styling */
 .card .stCheckbox>div label { color:#0b1220 !important; }
 
-/* Muted footer */
+/* Footer register link: make it look like a centered sign-up button */
 .small-muted{
     color: var(--muted);
     font-size:13px;
     text-align:center;
-    margin-top:12px;
+    margin-top:18px;
 }
 
-/* Link style */
-a.register-link {
-    color: var(--primary2);
-    font-weight:600;
+/* style the register link into a centered button look */
+.small-muted .register-link {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: linear-gradient(180deg,var(--primary2), #8b0000);
+    color: #fff !important;
+    font-weight: 700;
     text-decoration: none;
+    margin-left: 8px;
 }
-a.register-link:hover { text-decoration: underline; }
+
+/* hover */
+.small-muted .register-link:hover {
+    opacity: 0.92;
+}
 </style>
 """
 
@@ -207,18 +221,20 @@ st.markdown(
 )
 
 # Use columns to reliably center the card across environments (left & right columns are flexible)
-left_col, center_col, right_col = st.columns([1, 3, 1])
+left_col, center_col, right_col = st.columns([1, 3, 0.8])
 
 with center_col:
     st.markdown("<div class='login-col'>", unsafe_allow_html=True)
     st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.markdown("### Login to Continue")
 
+    # heading moved inside the form and centered via CSS (keeps semantic & accessibility)
     with st.form("login_form"):
-        email = st.text_input("Email", placeholder="you@university.edu")
+        st.markdown("<h3>Login here...</h3>", unsafe_allow_html=True)
+        email = st.text_input("Email", placeholder="example@example.com")
         password = st.text_input("Password", type="password")
         remember = st.checkbox("Remember me")
         submitted = st.form_submit_button("🔓 Sign in")
+        
 
         if submitted:
             if not email or not password:
@@ -240,12 +256,10 @@ with center_col:
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# small footer link centered on full width
-st.markdown("<p class='small-muted'>Don't have an account? <a class='register-link' href='/Register' target='_self'>Register here</a></p>", unsafe_allow_html=True)
+# small footer link centered on full width (register link styled as a centered button)
+st.markdown("<p class='small-muted'>Don't have an account?<a class='register-link' href='register.py'> Register here</a></p>", unsafe_allow_html=True)
 
 # Small defensive script: remove any unusually large input element that is NOT inside our .card
-# (this targets the mysterious white bar that can appear because of stray inputs from other pages/themes;
-#  it only hides inputs wider than 500px that are not descendants of .card)
 st.markdown(
     """
     <script>
