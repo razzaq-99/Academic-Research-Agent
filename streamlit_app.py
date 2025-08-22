@@ -11,6 +11,7 @@ from datetime import datetime
 import plotly.express as px
 from research_agent import AcademicResearchAgent, ResearchPaper
 
+
 # ----------------- Custom CSS ---------------- 
 def load_css():
     st.markdown("""

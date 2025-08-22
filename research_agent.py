@@ -3,9 +3,7 @@ Academic Research Agent - Complete Implementation
 A fully functional research agent for automated literature reviews using LangChain.
 """
 
-import os
-import json
-import asyncio
+# ----------------- All libraries/dependencies imports ---------------- 
 import logging
 from datetime import datetime
 from typing import List, Dict, Optional, Any
@@ -13,13 +11,10 @@ from dataclasses import dataclass
 from urllib.parse import quote
 import xml.etree.ElementTree as ET
 
-# Core libraries
-import requests
-import streamlit as st
-from fpdf import FPDF
-import pandas as pd
 
-# LangChain imports
+import requests
+from fpdf import FPDF
+
 from langchain.embeddings import OllamaEmbeddings, HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma, FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -28,14 +23,14 @@ from langchain.chat_models import ChatOllama
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
-from langchain.agents import AgentType, initialize_agent, Tool
-from langchain.tools import BaseTool
-from langchain.callbacks import StreamlitCallbackHandler
 
-# Configure logging
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+# ----------------- all details of research paper ---------------- 
 @dataclass
 class ResearchPaper:
     """Data class for storing research paper information"""
@@ -59,6 +54,8 @@ class ArxivAPI:
     def __init__(self):
         self.session = requests.Session()
     
+    
+    # ----------------- Method for searching papers ---------------- 
     def search_papers(self, query: str, max_results: int = 10) -> List[ResearchPaper]:
         """Search for papers on ArXiv"""
         try:
@@ -79,6 +76,7 @@ class ArxivAPI:
             logger.error(f"Error searching ArXiv: {e}")
             return []
     
+    # ----------------- Arxiv resource ---------------- 
     def _parse_arxiv_response(self, xml_content: str) -> List[ResearchPaper]:
         """Parse ArXiv XML response"""
         papers = []
@@ -132,7 +130,9 @@ class ArxivAPI:
             logger.error(f"Error parsing ArXiv response: {e}")
             
         return papers
+    
 
+# ----------------- Semantic Scholar Class ---------------- 
 class SemanticScholarAPI:
     """Wrapper for Semantic Scholar API"""
     
@@ -172,25 +172,25 @@ class SemanticScholarAPI:
         
         try:
             for item in data.get('data', []):
-                # Extract basic information
+                # ----------------- Extract information ---------------- 
                 title = item.get('title', '')
                 abstract = item.get('abstract', '')
                 year = item.get('year')
                 venue = item.get('venue', '')
                 citation_count = item.get('citationCount', 0)
                 
-                # Extract authors
+                
                 authors = []
                 for author in item.get('authors', []):
                     authors.append(author.get('name', ''))
                 
-                # Extract PDF URL
+                # ----------------- Extract PDF ---------------- 
                 pdf_url = None
                 open_access_pdf = item.get('openAccessPdf')
                 if open_access_pdf:
                     pdf_url = open_access_pdf.get('url')
                 
-                # Extract DOI
+                # ----------------- Extract DOI ---------------- 
                 doi = None
                 external_ids = item.get('externalIds', {})
                 if external_ids:
@@ -214,6 +214,8 @@ class SemanticScholarAPI:
             
         return papers
 
+
+# ----------------- LLM Support ---------------- 
 class LLMService:
     """Service for handling LLM operations with fallback support"""
     
@@ -249,10 +251,11 @@ class LLMService:
             logger.error(f"Failed to initialize Ollama: {e}")
             raise Exception("Both OpenAI and Ollama initialization failed")
     
+    
+    # ----------------- Summary of papers ---------------- 
     def summarize_paper(self, paper: ResearchPaper) -> Dict[str, Any]:
         """Generate summary and key contributions for a paper"""
         try:
-            # Create prompt for summarization
             prompt_template = PromptTemplate(
                 input_variables=["title", "abstract", "authors"],
                 template="""
@@ -336,6 +339,8 @@ class LLMService:
                 "impact": "N/A"
             }
 
+
+# ----------------- Storing data locally i.e chroma db ---------------- 
 class VectorStore:
     """Vector store for semantic search and retrieval"""
     
@@ -361,7 +366,7 @@ class VectorStore:
                 doc = Document(page_content=content, metadata=metadata)
                 documents.append(doc)
             
-            # Create vector store
+            # ----------------- Create vector store ---------------- 
             if self.use_chroma:
                 self.vectorstore = Chroma.from_documents(
                     documents, 
@@ -386,6 +391,8 @@ class VectorStore:
             logger.error(f"Error in similarity search: {e}")
             return []
 
+
+# ----------------- Overall Report Generator ---------------- 
 class ReportGenerator:
     """Generate structured reports in multiple formats"""
     
@@ -504,6 +511,8 @@ Based on the analysis of {len(papers)} papers, several key trends emerge in the 
             logger.error(f"Error generating PDF: {e}")
             return False
 
+
+# ----------------- Main Research Agent Class---------------- 
 class AcademicResearchAgent:
     """Main research agent class orchestrating all components"""
     
@@ -519,19 +528,15 @@ class AcademicResearchAgent:
         try:
             logger.info(f"Starting research for query: {query}")
             
-            # st.info("🔍 Searching for relevant papers...")
             papers = await self._search_papers(query, max_papers)
             
             if not papers:
                 return {"error": "No papers found for the given query"}
             
-            # st.info("🤖 Analyzing papers with AI...")
             papers = await self._analyze_papers(papers)
             
-            # st.info("📊 Creating semantic search index...")
             self.vector_store.create_from_papers(papers)
             
-            # st.info("📝 Generating research report...")
             markdown_report = self.report_generator.generate_markdown_report(papers, query)
             
             return {
@@ -548,7 +553,6 @@ class AcademicResearchAgent:
         """Search for papers using multiple APIs"""
         all_papers = []
         
-        # Search ArXiv
         try:
             arxiv_papers = self.arxiv_api.search_papers(query, max_papers // 2)
             all_papers.extend(arxiv_papers)
@@ -556,7 +560,6 @@ class AcademicResearchAgent:
         except Exception as e:
             logger.error(f"ArXiv search failed: {e}")
         
-        # Search Semantic Scholar
         try:
             semantic_papers = self.semantic_scholar_api.search_papers(query, max_papers // 2)
             all_papers.extend(semantic_papers)
@@ -564,11 +567,12 @@ class AcademicResearchAgent:
         except Exception as e:
             logger.error(f"Semantic Scholar search failed: {e}")
         
-        # Remove duplicates based on title similarity
         unique_papers = self._remove_duplicates(all_papers)
         
         return unique_papers[:max_papers]
     
+    
+    # ----------------- Overall reseach paper information ---------------- 
     async def _analyze_papers(self, papers: List[ResearchPaper]) -> List[ResearchPaper]:
         """Analyze papers using LLM"""
         analyzed_papers = []
@@ -577,7 +581,6 @@ class AcademicResearchAgent:
             try:
                 analysis = self.llm_service.summarize_paper(paper)
                 
-                # Update paper with analysis
                 paper.summary = analysis.get("summary", "")
                 paper.key_contributions = analysis.get("key_contributions", [])
                 
@@ -589,6 +592,8 @@ class AcademicResearchAgent:
         
         return analyzed_papers
     
+    
+    # ----------------- Remove dublicate papers from different sources ---------------- 
     def _remove_duplicates(self, papers: List[ResearchPaper]) -> List[ResearchPaper]:
         """Remove duplicate papers based on title similarity"""
         unique_papers = []
@@ -602,6 +607,8 @@ class AcademicResearchAgent:
         
         return unique_papers
     
+    
+    # ----------------- Semantic Search ---------------- 
     def semantic_search(self, query: str, k: int = 5) -> List[Dict]:
         """Perform semantic search on analyzed papers"""
         try:
